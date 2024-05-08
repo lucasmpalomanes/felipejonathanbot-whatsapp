@@ -118,3 +118,18 @@ export const resetarComandosDiaUsuario = async(id_usuario) =>{
 export const alterarGold = async(id_usuario, valor) => {
     db.updateAsync({id_usuario}, {$inc:{gold : valor}})
 }
+
+// Função para obter um usuário aleatório
+export const obterUsuarioAleatorio = async () => {
+    // Obtém todos os usuários
+    const usuarios = await obterTodosUsuarios();
+    
+    // Verifica se há usuários na base de dados
+    if (usuarios.length === 0) {
+        return null; // Retorna null se não houver usuários
+    }
+    
+    // Escolhe aleatoriamente um usuário e retorna o objeto do usuário
+    const indiceAleatorio = Math.floor(Math.random() * usuarios.length);
+    return usuarios[indiceAleatorio];
+}
