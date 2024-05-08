@@ -67,6 +67,14 @@ export const resetarComandosDia = async()=>{
     await usuariosdb.resetarComandosDia()
 }
 
+export const resetarGold = async() =>{
+    await usuariosdb.resetarGold()
+}
+
 export const resetarComandosDiaUsuario = async(usuario)=>{
     await usuariosdb.resetarComandosDiaUsuario(usuario)
+}
+
+export const alterarGold = async(usuario, valor)=>{
+    await usuariosdb.alterarGold(usuario, valor)
 }

@@ -5,14 +5,16 @@ import * as api from '../lib/api.js'
 import * as socket from '../baileys/socket-funcoes.js'
 import { MessageTypes } from '../baileys/mensagem.js'
 import moment from "moment-timezone"
+import * as usuarios from '../controle/usuariosControle.js'
 
 
 export const diversao = async(c, mensagemInfoCompleta) => {
     const {msgs_texto, ownerNumber} = mensagemInfoCompleta
     const {botNumber, botInfoJSON} = mensagemInfoCompleta.bot
     const {groupId, groupOwner, isGroupAdmins, isBotGroupAdmins} = mensagemInfoCompleta.grupo
-    const {command, sender, textoRecebido, args, id, chatId, isGroupMsg, quotedMsg, quotedMsgObj, quotedMsgObjInfo, mentionedJidList} = mensagemInfoCompleta.mensagem
-    const {prefixo} = botInfoJSON
+    const {command, sender, textoRecebido, args, id, chatId, isGroupMsg, quotedMsg, quotedMsgObj, quotedMsgObjInfo, mentionedJidList, username} = mensagemInfoCompleta.mensagem
+    const {prefixo, nome_bot, nome_adm} = botInfoJSON
+
     let cmdSemPrefixo = command.replace(prefixo, "")
 
     try {
@@ -124,6 +126,7 @@ export const diversao = async(c, mensagemInfoCompleta) => {
 
             case "ppt":
                 try{
+                    let dadosUsuario = await usuarios.obterDadosUsuario(sender), tipoUsuario = dadosUsuario.tipo, maxComandosDia = dadosUsuario.max_comandos_dia ||  "Sem limite" 
                     let ppt = ["pedra","papel","tesoura"], indexAleatorio = Math.floor(Math.random() * ppt.length)
                     if(args.length === 1) return await socket.reply(c, chatId, await erroComandoMsg(command), id)
                     if(!ppt.includes(args[1].toLowerCase())) return await socket.reply(c, chatId, msgs_texto.diversao.ppt.opcao_erro, id)
@@ -146,9 +149,15 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                     }
                     let textoResultado = ''
                     if(vitoriaUsuario == true) {
+                        let premio = 5
+                        usuarios.alterarGold(dadosUsuario.id_usuario, premio)
                         textoResultado = criarTexto(msgs_texto.diversao.ppt.resposta.vitoria, iconeEscolhaUsuario, iconeEscolhaBot)
+                        textoResultado += "\nReceba " + premio + " moedas";
                     }else if(vitoriaUsuario == false){
+                        let punicao = -3
+                        usuarios.alterarGold(dadosUsuario.id_usuario, punicao)
                         textoResultado = criarTexto(msgs_texto.diversao.ppt.resposta.derrota, iconeEscolhaUsuario, iconeEscolhaBot)
+                        textoResultado += "\nPerdeu " + Math.abs(punicao) + " moedas";
                     } else {
                         textoResultado = criarTexto(msgs_texto.diversao.ppt.resposta.empate, iconeEscolhaUsuario, iconeEscolhaBot)
                     }
@@ -309,6 +318,16 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                 } catch(err){
                     await socket.reply(c, chatId, criarTexto(msgs_texto.geral.erro_comando_codigo, command), id)
                     err.message = `${command} - ${err.message}`
+                    throw err
+                }
+                break
+
+            case "statusgold":
+                try{
+                    let dadosUsuario = await usuarios.obterDadosUsuario(sender), tipoUsuario = dadosUsuario.tipo, maxComandosDia = dadosUsuario.max_comandos_dia ||  "Sem limite" 
+                    let nomeUsuario = username
+                    await socket.reply(c, chatId, "Golds do usuário " + nomeUsuario + ": " + dadosUsuario.gold, id)
+                } catch(err){
                     throw err
                 }
                 break

@@ -553,7 +553,16 @@ export const admin = async(c, mensagemInfoCompleta) => {
                     throw err
                 }
                 break
-
+            
+            case 'resetargold':
+                try{
+                    await usuarios.resetarGold()
+                    await socket.reply(c, chatId, "Gold de todos usuários resetados com sucesso.", id)
+                } catch(err){
+                    throw err
+                }
+                break
+            
             case 'devtest':
                 try{
                     //PARA TESTES
