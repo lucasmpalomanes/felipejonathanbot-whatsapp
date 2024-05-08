@@ -361,7 +361,7 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                     
                     let dadosLadrao = await usuarios.obterDadosUsuario(sender)
 
-                    if(dadosLadrao.roubos_dia >= 5) return await socket.reply(c, chatId, "Você já roubou demais hoje. Por favor, tente novamente amanhã 👮‍♂️🚓")
+                    if(dadosLadrao.roubos_dia >= 5) return await socket.reply(c, chatId, "Você já roubou demais hoje. Por favor, tente novamente amanhã 👮‍♂️🚓", id)
 
                     let idResposta, alvo
 
@@ -370,7 +370,7 @@ export const diversao = async(c, mensagemInfoCompleta) => {
 
                     let dadosAlvo = await usuarios.obterDadosUsuario(alvo)
                     usuarios.incrementaContagemRoubos(sender)
-                    
+
                     await socket.reply(c, chatId, "🎲 Testando a sorte... 🎲", id)               
 
                     //Testa o sucesso:
