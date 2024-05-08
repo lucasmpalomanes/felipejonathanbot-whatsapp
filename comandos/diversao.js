@@ -21,7 +21,7 @@ export const diversao = async(c, mensagemInfoCompleta) => {
 
     try {
         switch(cmdSemPrefixo){
-            case 'tiodaingrid':
+            /*case 'tiodaingrid':
                 if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)                    
                     if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
                     
@@ -33,6 +33,23 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                     await socket.sendTextWithMentions(c, chatId, respostaTexto, [participanteEscolhido.id_usuario])
                     usuarios.alterarGold(participanteEscolhido.id_usuario, -valorRoubado)
                 break
+            */
+            case "tiodaingrid":
+                try {
+                    if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
+                        let _idParticipantesAtuais = await socket.getGroupMembersId(c, groupId)
+                        let valorRoubado = Math.floor(Math.random() * 30)
+                        let _indexAleatorio = Math.floor(Math.random() * _idParticipantesAtuais.length)
+                        let _pessoaEscolhida1 = _idParticipantesAtuais[_indexAleatorio]
+                        let _respostaTexto = criarTexto("O tio da Ingrid roubou " + valorRoubado + " golds do(a) @{p1}! 😈🤤", _pessoaEscolhida1.replace("@s.whatsapp.net", ''),)
+                        await socket.reply(c, chatId, msgs_texto.diversao.roletarussa.espera , id)               
+                        await socket.sendTextWithMentions(c, chatId, _respostaTexto, [_pessoaEscolhida1])
+                        usuarios.alterarGold(_pessoaEscolhida1, -valorRoubado)
+                } catch (err) {
+                    throw err
+                }
+                break
+    
             case 'detector' :
                 try{
                     if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
