@@ -153,6 +153,7 @@ export const botVerificarExpiracaoLimite = async ()=>{
     let timestamp_atual = Math.round(new Date().getTime()/1000)
     if(timestamp_atual >= bot.limite_diario.expiracao){
         await usuarios.resetarComandosDia()
+        await usuarios.resetarRoubosDia()
         bot.limite_diario.expiracao = timestamp_atual + 86400
         await fs.writeFileSync(path.resolve('database/dados_salvos/bot.json'), JSON.stringify(bot))
     } 

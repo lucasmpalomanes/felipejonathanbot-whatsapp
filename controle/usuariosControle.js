@@ -82,3 +82,11 @@ export const alterarGold = async(usuario, valor)=>{
 export const obterUsuarioAleatorio = async()=>{
     return await usuariosdb.obterUsuarioAleatorio()
 }
+
+export const incrementaContagemRoubos = async (id_usuario) => {
+    await usuariosdb.incrementaContagemRoubos(id_usuario)
+}
+
+export const resetarRoubosDia = async() => {
+    await usuariosdb.resetarRoubosDia()
+}

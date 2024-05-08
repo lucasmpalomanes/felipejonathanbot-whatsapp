@@ -9,7 +9,6 @@ import * as usuarios from '../controle/usuariosControle.js'
 import { participanteExiste } from '../database/grupos.js'
 import { obterTodosUsuarios } from '../database/usuarios.js'
 
-
 export const diversao = async(c, mensagemInfoCompleta) => {
     const {msgs_texto, ownerNumber} = mensagemInfoCompleta
     const {botNumber, botInfoJSON} = mensagemInfoCompleta.bot
@@ -21,19 +20,6 @@ export const diversao = async(c, mensagemInfoCompleta) => {
 
     try {
         switch(cmdSemPrefixo){
-            /*case 'tiodaingrid':
-                if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)                    
-                    if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
-                    
-                    let valorRoubado = Math.floor(Math.random() * 30)
-
-                    let participanteEscolhido = await usuarios.obterUsuarioAleatorio()
-                    let respostaTexto = criarTexto("O tio da Ingrid roubou "+ valorRoubado + " golds do(a) @{p1}", participanteEscolhido.id_usuario.replace("@s.whatsapp.net", ''))
-                    await socket.reply(c, chatId, msgs_texto.diversao.roletarussa.espera , id)
-                    await socket.sendTextWithMentions(c, chatId, respostaTexto, [participanteEscolhido.id_usuario])
-                    usuarios.alterarGold(participanteEscolhido.id_usuario, -valorRoubado)
-                break
-            */
             case "tiodaingrid":
                 try {
                     if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
@@ -366,6 +352,50 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                     throw err
                 }
                 break
+
+            case "roubargold":
+                try{
+                    if(!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
+                    if(!quotedMsg && mentionedJidList.length == 0) return await socket.reply(c, chatId, await erroComandoMsg(command) , id)
+                    if(mentionedJidList.length > 1) return await socket.reply(c, chatId, "Por favor, marque apenas um usuário", id)
+                    
+                    let dadosLadrao = await usuarios.obterDadosUsuario(sender)
+
+                    if(dadosLadrao.roubos_dia >= 5) return await socket.reply(c, chatId, "Você já roubou demais hoje. Por favor, tente novamente amanhã 👮‍♂️🚓")
+
+                    let idResposta, alvo
+
+                    if(mentionedJidList.length == 1) idResposta = id, alvo = mentionedJidList[0]
+                    else idResposta = quotedMsgObj, alvo = quotedMsgObjInfo.sender
+
+                    let dadosAlvo = await usuarios.obterDadosUsuario(alvo)
+                    usuarios.incrementaContagemRoubos(sender)
+                    
+                    await socket.reply(c, chatId, "🎲 Testando a sorte... 🎲", id)               
+
+                    //Testa o sucesso:
+                    let sucesso = Math.floor(Math.random() * 10)
+
+                    if(sucesso % 2 == 0){
+                        //Se for par, o roubo dá certo
+                        let valorRoubado = Math.floor(Math.random() * Math.abs(dadosAlvo.gold))
+                        usuarios.alterarGold(dadosAlvo.id_usuario, -valorRoubado)
+                        usuarios.alterarGold(dadosLadrao.id_usuario, valorRoubado)
+
+                        let _respostaTexto = criarTexto("@{p1} roubou com sucesso " + valorRoubado + " golds do(a) @{p2}! 🔫☯️🎭", sender.replace("@s.whatsapp.net", ''), alvo.replace("@s.whatsapp.net", ''))
+                        await socket.sendTextWithMentions(c, chatId, _respostaTexto, [sender, alvo])
+                    } else {
+                        //Se for ímpar, o roubo dá errado
+                        let valorRoubado = Math.floor(Math.random() * Math.abs(dadosLadrao.gold))
+                        usuarios.alterarGold(dadosAlvo.id_usuario, valorRoubado)
+                        usuarios.alterarGold(dadosLadrao.id_usuario, -valorRoubado)
+
+                        let _respostaTexto = criarTexto("@{p1} falhou ao tentar roubar @{p2} e acabou perdendo " + valorRoubado + " golds para ele(a). \nMuito azar ❌❌❌", sender.replace("@s.whatsapp.net", ''), alvo.replace("@s.whatsapp.net", ''))
+                        await socket.sendTextWithMentions(c, chatId, _respostaTexto, [sender, alvo])
+                    }
+                } catch(err){
+                    throw err
+                }
         }
     } catch(err){
         await socket.reply(c, chatId, criarTexto(msgs_texto.geral.erro_comando_codigo, command), id)

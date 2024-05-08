@@ -12,7 +12,9 @@ async function Usuario(id_usuario, nome) {
     MAX_COMANDOS_DIA = (await bot.obterInformacoesBot()).limite_diario.limite_tipos.comum,
     RECEBEUBOASVINDAS = false,
     TIPO = 'comum',
-    GOLD = 50
+    GOLD = 50,
+    ROUBOS_DIA = 0,
+    ROUBOS_TOTAL = 0
 
     return {
         id_usuario : ID_USUARIO,
@@ -22,7 +24,9 @@ async function Usuario(id_usuario, nome) {
         max_comandos_dia : MAX_COMANDOS_DIA,
         recebeuBoasVindas: RECEBEUBOASVINDAS,
         tipo: TIPO,
-        gold: GOLD
+        gold: GOLD,
+        roubos_dia: ROUBOS_DIA,
+        roubos_total: ROUBOS_TOTAL
     }
 }
 
@@ -132,4 +136,12 @@ export const obterUsuarioAleatorio = async () => {
     // Escolhe aleatoriamente um usuário e retorna o objeto do usuário
     const indiceAleatorio = Math.floor(Math.random() * usuarios.length);
     return usuarios[indiceAleatorio];
+}
+
+export const incrementaContagemRoubos = async (id_usuario) => {
+    db.updateAsync({id_usuario}, {$inc: {roubos_dia: 1, roubos_total: 1}})
+}
+
+export const resetarRoubosDia = async() => {
+    db.updateAsync({}, {$set: {roubos_dia: 0}}, {multi: true})
 }

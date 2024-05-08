@@ -105,7 +105,8 @@ export const listarComandos = async () => {
             `${prefixo}tiodaingrid`,
             `${prefixo}jpmc`,
             `${prefixo}sexoanal`,
-            `${prefixo}statusgold`
+            `${prefixo}statusgold`,
+            `${prefixo}roubargold`
         ],
         admin:[
             `${prefixo}sair`,
