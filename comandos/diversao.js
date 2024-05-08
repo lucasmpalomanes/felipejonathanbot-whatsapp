@@ -322,12 +322,17 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                 }
                 break
             case "sexoanal":
-                if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
-                    let _idParticipantesAtuais = await socket.getGroupMembersId(c, groupId)
-                    let _indexAleatorio = Math.floor(Math.random() * _idParticipantesAtuais.length)
-                    let _pessoaEscolhida1 = _idParticipantesAtuais[_indexAleatorio]
-                    let _respostaTexto = criarTexto("O cuzinho do Pedras foi penetrado pelo(a) @{p1}! 😈🤤", _pessoaEscolhida1.replace("@s.whatsapp.net", ''),)
-                    await socket.sendTextWithMentions(c, chatId, _respostaTexto, [_pessoaEscolhida1])
+                try {
+                    if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
+                        let _idParticipantesAtuais = await socket.getGroupMembersId(c, groupId)
+                        let _indexAleatorio = Math.floor(Math.random() * _idParticipantesAtuais.length)
+                        let _pessoaEscolhida1 = _idParticipantesAtuais[_indexAleatorio]
+                        let _respostaTexto = criarTexto("O cuzinho do Pedras foi penetrado pelo(a) @{p1}! 😈🤤", _pessoaEscolhida1.replace("@s.whatsapp.net", ''),)
+                        await socket.sendTextWithMentions(c, chatId, _respostaTexto, [_pessoaEscolhida1])
+                } catch (err) {
+                    throw err
+                }
+                break
 
             case "statusgold":
                 try{
