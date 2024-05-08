@@ -11,7 +11,8 @@ async function Usuario(id_usuario, nome) {
     COMANDOS_DIA = 0,
     MAX_COMANDOS_DIA = (await bot.obterInformacoesBot()).limite_diario.limite_tipos.comum,
     RECEBEUBOASVINDAS = false,
-    TIPO = 'comum'
+    TIPO = 'comum',
+    GOLD = 50
 
     return {
         id_usuario : ID_USUARIO,
@@ -20,7 +21,8 @@ async function Usuario(id_usuario, nome) {
         comandos_dia: COMANDOS_DIA,
         max_comandos_dia : MAX_COMANDOS_DIA,
         recebeuBoasVindas: RECEBEUBOASVINDAS,
-        tipo: TIPO
+        tipo: TIPO,
+        gold: GOLD
     }
 }
 
@@ -105,6 +107,14 @@ export const resetarComandosDia = async() =>{
     db.updateAsync({}, {$set:{comandos_dia : 0}}, {multi: true})
 }
 
+export const resetarGold = async() =>{
+    db.updateAsync({}, {$set:{gold : 50}}, {multi: true})
+}
+
 export const resetarComandosDiaUsuario = async(id_usuario) =>{
     db.updateAsync({id_usuario}, {$set:{comandos_dia : 0}})
+}
+
+export const alterarGold = async(id_usuario, valor) => {
+    db.updateAsync({id_usuario}, {$inc:{gold : valor}})
 }
