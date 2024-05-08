@@ -300,7 +300,7 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                     throw err
                 }
 
-            case 'jpmc':
+            case "jpmc":
                 try{
                     const jpmcFotoURL = "https://scontent.fgru6-1.fna.fbcdn.net/v/t39.30808-1/275542689_1586052051773204_8318614967093960045_n.jpg?stp=dst-jpg_s200x200&_nc_cat=108&ccb=1-7&_nc_sid=5f2048&_nc_ohc=wG2VI1LpkPYQ7kNvgH7TKCx&_nc_ht=scontent.fgru6-1.fna&oh=00_AfDvoPXjd4iKrb-Jrof5aZE0r202zMvdtx1NNW5XUAnLsw&oe=66407338"
                     await socket.replyFileFromUrl(c, MessageTypes.image, chatId, jpmcFotoURL,'JPMC', id)
