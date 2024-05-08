@@ -293,12 +293,14 @@ export const diversao = async(c, mensagemInfoCompleta) => {
 
             case "horario":
                 try{
-                    if(moment().tz("America/Sao_Paulo").format("HH") == "22" && moment().tz("America/Sao_Paulo").format("mm") == "22"){
+                    if(moment().tz("America/Sao_Paulo").format("HH") == "22" && moment().tz("America/Sao_Paulo").format("mm") == "22" || moment().tz("America/Sao_Paulo").format("HH") == "17" && moment().tz("America/Sao_Paulo").format("mm") == "17"){
                         await socket.sendText(c, chatId, "Horário da Karen 🇧🇷🇧🇷")
+                        const karenimgFotoURL = "https://static.poder360.com.br/2022/08/Bolsonaro-capa-plano-de-governo-PL-2022-9.ago_.2022-848x477.jpg"
+                        await socket.replyFileFromUrl(c, MessageTypes.image, chatId, karenimgFotoURL,'JPMC', id)
                     } else await socket.sendText(c, chatId, moment.tz("America/Sao_Paulo").format("HH:mm"))    
                 } catch(err) {
                     throw err
-                }
+                } //Não colocar break
 
             case "jpmc":
                 try{
