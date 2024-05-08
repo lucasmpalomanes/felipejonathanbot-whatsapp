@@ -6,6 +6,8 @@ import * as socket from '../baileys/socket-funcoes.js'
 import { MessageTypes } from '../baileys/mensagem.js'
 import moment from "moment-timezone"
 import * as usuarios from '../controle/usuariosControle.js'
+import { participanteExiste } from '../database/grupos.js'
+import { obterTodosUsuarios } from '../database/usuarios.js'
 
 
 export const diversao = async(c, mensagemInfoCompleta) => {
@@ -20,12 +22,16 @@ export const diversao = async(c, mensagemInfoCompleta) => {
     try {
         switch(cmdSemPrefixo){
             case 'tiodaingrid':
-                if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
-                    let idParticipantesAtuais = await socket.getGroupMembersId(c, groupId)
-                    let indexAleatorio = Math.floor(Math.random() * idParticipantesAtuais.length)
-                    let pessoaEscolhida1 = idParticipantesAtuais[indexAleatorio]
-                    let respostaTexto = criarTexto("O tio da Ingrid roubou o(a) @{p1} 😭😭", pessoaEscolhida1.replace("@s.whatsapp.net", ''),)
-                    await socket.sendTextWithMentions(c, chatId, respostaTexto, [pessoaEscolhida1])
+                if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)                    
+                    if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
+                    
+                    let valorRoubado = Math.floor(Math.random() * 30)
+
+                    let participanteEscolhido = await usuarios.obterUsuarioAleatorio()
+                    let respostaTexto = criarTexto("O tio da Ingrid roubou "+ valorRoubado + " golds do(a) @{p1}", participanteEscolhido.id_usuario.replace("@s.whatsapp.net", ''))
+                    await socket.reply(c, chatId, msgs_texto.diversao.roletarussa.espera , id)
+                    await socket.sendTextWithMentions(c, chatId, respostaTexto, [participanteEscolhido.id_usuario])
+                    usuarios.alterarGold(participanteEscolhido.id_usuario, -valorRoubado)
                 break
             case 'detector' :
                 try{
