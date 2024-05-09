@@ -7,7 +7,8 @@ import * as api from '../lib/api.js'
 import { consoleErro, criarTexto, erroComandoMsg, primeiraLetraMaiuscula, timestampParaData } from '../lib/util.js'
 import * as usuarios from '../controle/usuariosControle.js'
 import { participanteExiste } from '../database/grupos.js'
-import { obterTodosUsuarios } from '../database/usuarios.js'
+import { atualizaTimestampCooldownRoubo, obterTodosUsuarios } from '../database/usuarios.js'
+import * as bot from '../controle/botControle.js'
 
 export const diversao = async(c, mensagemInfoCompleta) => {
     const {msgs_texto, ownerNumber} = mensagemInfoCompleta
@@ -362,10 +363,13 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                     if(!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
                     if(!quotedMsg && mentionedJidList.length == 0) return await socket.reply(c, chatId, await erroComandoMsg(command) , id)
                     if(mentionedJidList.length > 1) return await socket.reply(c, chatId, "Por favor, marque apenas um usuário", id)
-                    
+                    let timestamp_atual = Math.round(new Date().getTime()/1000)
+
                     let dadosLadrao = await usuarios.obterDadosUsuario(sender)
 
-                    if(dadosLadrao.roubos_dia >= 5) return await socket.reply(c, chatId, "Você já roubou demais hoje. Por favor, tente novamente amanhã 👮‍♂️🚓", id)
+                    if(dadosLadrao.roubos_dia >= 5 && timestamp_atual < dadosLadrao.timestamp_cooldown_roubo){
+                        return await socket.reply(c, chatId, "Você já roubou demais hoje. Por favor, tente novamente amanhã 👮‍♂️🚓", id)
+                    }
 
                     let idResposta, alvo
 
@@ -373,29 +377,43 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                     else idResposta = quotedMsgObj, alvo = quotedMsgObjInfo.sender
 
                     let dadosAlvo = await usuarios.obterDadosUsuario(alvo)
-                    usuarios.incrementaContagemRoubos(sender)
+                    if(dadosAlvo.gold <= 0) return await socket.reply(c, chatId, "Tá duro dorme! Esse usuário não tem gold suficiente para ser roubado :(", id)
+
+                    if(dadosLadrao.roubos_dia == 4){
+                        await usuarios.atualizaTimestampCooldownRoubo(dadosLadrao.id_usuario, timestamp_atual + 86400)
+                    }
+
+                    await usuarios.incrementaContagemRoubos(sender)
+
 
                     await socket.reply(c, chatId, "🎲 Testando a sorte... 🎲", id)               
 
                     //Testa o sucesso:
                     let sucesso = Math.floor(Math.random() * 10)
 
-                    if(sucesso % 2 == 0){
-                        //Se for par, o roubo dá certo
+                    if(sucesso > 4){
+                        //Se o roubo dá certo
                         let valorRoubado = Math.floor(Math.random() * Math.abs(dadosAlvo.gold))
-                        usuarios.alterarGold(dadosAlvo.id_usuario, -valorRoubado)
-                        usuarios.alterarGold(dadosLadrao.id_usuario, valorRoubado)
+                        await usuarios.alterarGold(dadosAlvo.id_usuario, -valorRoubado)
+                        await usuarios.alterarGold(dadosLadrao.id_usuario, valorRoubado)
 
                         let _respostaTexto = criarTexto("@{p1} roubou com sucesso " + valorRoubado + " golds do(a) @{p2}! 🔫☯️🎭", sender.replace("@s.whatsapp.net", ''), alvo.replace("@s.whatsapp.net", ''))
                         await socket.sendTextWithMentions(c, chatId, _respostaTexto, [sender, alvo])
                     } else {
-                        //Se for ímpar, o roubo dá errado
-                        let valorRoubado = Math.floor(Math.random() * Math.abs(dadosLadrao.gold))
-                        usuarios.alterarGold(dadosAlvo.id_usuario, valorRoubado)
-                        usuarios.alterarGold(dadosLadrao.id_usuario, -valorRoubado)
+                        //Se nao conseguir roubar
+                        if(dadosLadrao.gold > 0) {
+                            let valorRoubado = Math.floor(Math.random() * Math.abs(dadosLadrao.gold))
 
-                        let _respostaTexto = criarTexto("@{p1} falhou ao tentar roubar @{p2} e acabou perdendo " + valorRoubado + " golds para ele(a). \nMuito azar ❌❌❌", sender.replace("@s.whatsapp.net", ''), alvo.replace("@s.whatsapp.net", ''))
-                        await socket.sendTextWithMentions(c, chatId, _respostaTexto, [sender, alvo])
+                            await usuarios.alterarGold(dadosAlvo.id_usuario, valorRoubado)
+                            await usuarios.alterarGold(dadosLadrao.id_usuario, -valorRoubado)
+
+                            let _respostaTexto = criarTexto("@{p1} falhou ao tentar roubar @{p2} e acabou perdendo " + valorRoubado + " golds para ele(a). \nMuito azar ❌❌❌", sender.replace("@s.whatsapp.net", ''), alvo.replace("@s.whatsapp.net", ''))
+                            await socket.sendTextWithMentions(c, chatId, _respostaTexto, [sender, alvo])
+                        } else {
+                            let _respostaTexto = criarTexto("@{p1} falhou ao tentar roubar @{p2} e não tinha gold nem pra perder. \nMuito azar ❌❌❌", sender.replace("@s.whatsapp.net", ''), alvo.replace("@s.whatsapp.net", ''))
+                            await socket.sendTextWithMentions(c, chatId, _respostaTexto, [sender, alvo])
+                        }
+                        
                     }
                 } catch(err){
                     throw err

@@ -90,3 +90,7 @@ export const incrementaContagemRoubos = async (id_usuario) => {
 export const resetarRoubosDia = async() => {
     await usuariosdb.resetarRoubosDia()
 }
+
+export const atualizaTimestampCooldownRoubo = async(id_usuario, timestamp_atual) => {
+    await usuariosdb.atualizaTimestampCooldownRoubo(id_usuario, timestamp_atual)
+}

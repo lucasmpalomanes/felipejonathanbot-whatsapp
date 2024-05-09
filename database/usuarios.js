@@ -14,7 +14,8 @@ async function Usuario(id_usuario, nome) {
     TIPO = 'comum',
     GOLD = 50,
     ROUBOS_DIA = 0,
-    ROUBOS_TOTAL = 0
+    ROUBOS_TOTAL = 0,
+    TIMESTAMP_COOLDOWN_ROUBO = 0
 
     return {
         id_usuario : ID_USUARIO,
@@ -26,7 +27,8 @@ async function Usuario(id_usuario, nome) {
         tipo: TIPO,
         gold: GOLD,
         roubos_dia: ROUBOS_DIA,
-        roubos_total: ROUBOS_TOTAL
+        roubos_total: ROUBOS_TOTAL,
+        timestamp_cooldown_roubo: TIMESTAMP_COOLDOWN_ROUBO
     }
 }
 
@@ -112,7 +114,7 @@ export const resetarComandosDia = async() =>{
 }
 
 export const resetarGold = async() =>{
-    db.updateAsync({}, {$set:{gold : 50}}, {multi: true})
+    db.updateAsync({}, {$set:{gold : 50, roubos_dia: 0, timestamp_cooldown_roubo: 0}}, {multi: true})
 }
 
 export const resetarComandosDiaUsuario = async(id_usuario) =>{
@@ -144,4 +146,12 @@ export const incrementaContagemRoubos = async (id_usuario) => {
 
 export const resetarRoubosDia = async() => {
     db.updateAsync({}, {$set: {roubos_dia: 0}}, {multi: true})
+}
+
+export const resetarRoubosDiaUsuario = async(id_usuario) => {
+    db.updateAsync({id_usuario}, {$set: {roubos_dia: 0}})
+}
+
+export const atualizaTimestampCooldownRoubo = async(id_usuario, timestamp_atual) => {
+    db.updateAsync({id_usuario}, {$set: {timestamp_cooldown_roubo: timestamp_atual}})
 }
