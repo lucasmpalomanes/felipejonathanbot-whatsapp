@@ -341,7 +341,8 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                         let _indexAleatorio = Math.floor(Math.random() * _idParticipantesAtuais.length)
                         let _pessoaEscolhida1 = _idParticipantesAtuais[_indexAleatorio]
                         let idPedras = "5511945553143@s.whatsapp.net"
-                        let _respostaTexto = criarTexto("O cuzinho do @{p1} foi penetrado pelo(a) @{p2}! 😈🤤", idPedras.replace("@s.whatsapp.net", ''), _pessoaEscolhida1.replace("@s.whatsapp.net", ''),)
+                        let _respostaTexto = criarTexto("O cuzinho do @{p1} foi penetrado pelo(a) @{p2}, que ganhou 10 golds! 😈🤤", idPedras.replace("@s.whatsapp.net", ''), _pessoaEscolhida1.replace("@s.whatsapp.net", ''),)
+                        await usuarios.alterarGold(_pessoaEscolhida1, 10)
                         await socket.sendTextWithMentions(c, chatId, _respostaTexto, [idPedras, _pessoaEscolhida1])
                 } catch (err) {
                     throw err
@@ -368,7 +369,9 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                     let dadosLadrao = await usuarios.obterDadosUsuario(sender)
 
                     if(dadosLadrao.roubos_dia >= 5 && timestamp_atual < dadosLadrao.timestamp_cooldown_roubo){
-                        return await socket.reply(c, chatId, "Você já roubou demais hoje. Por favor, tente novamente amanhã 👮‍♂️🚓", id)
+                        return await socket.reply(c, chatId, "Você já roubou demais hoje. Por favor, tente novamente amanhã 👮‍♂️🚓\n\n_NOVIDADE: Por 50 Golds você agora pode comprar um *Kit Carioca* (comando !kitcarioca) e voltar a roubar!_", id)
+                    } else if(dadosLadrao.roubos_dia >= 5){
+                        usuarios.resetarRoubosDiaUsuario(dadosLadrao.id_usuario)
                     }
 
                     let idResposta, alvo
@@ -413,11 +416,48 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                             let _respostaTexto = criarTexto("@{p1} falhou ao tentar roubar @{p2} e não tinha gold nem pra perder. \nMuito azar ❌❌❌", sender.replace("@s.whatsapp.net", ''), alvo.replace("@s.whatsapp.net", ''))
                             await socket.sendTextWithMentions(c, chatId, _respostaTexto, [sender, alvo])
                         }
-                        
                     }
                 } catch(err){
                     throw err
-                }
+                } break
+
+                case "rankgold":
+                    try {
+                        if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
+                            let _idParticipantesAtuais = await socket.getGroupMembersId(c, groupId)
+                            let _usuariosPorGold = await usuarios.obterUsuariosPorGold()
+                            let _respostaTexto = "*Ranking de membros com mais golds:*\n\n"
+                            let mencoes = []
+
+                            let i = 0, j = 0
+                            for(i = 0; i < _usuariosPorGold.length; i++){
+                                if(_idParticipantesAtuais.includes(_usuariosPorGold[i].id_usuario)){
+                                    j++
+                                    _respostaTexto += criarTexto("*" + j + "º lugar: @{p1}* com *" + _usuariosPorGold[i].gold + " golds!* \n\n", _usuariosPorGold[i].id_usuario.replace("@s.whatsapp.net", ''))
+                                    mencoes.push(_usuariosPorGold[i].id_usuario)
+                                }
+                            }
+                            await socket.sendTextWithMentions(c, chatId, _respostaTexto, mencoes)
+                    } catch (err) {
+                        throw err
+                    }
+                    break
+
+                case "kitcarioca":
+                    try{
+                        if(!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
+                        let dadosUsuario = await usuarios.obterDadosUsuario(sender)
+                        
+                        if(dadosUsuario.gold < 50)
+                            await socket.reply(c, chatId, "Golds insuficientes para a compra do *Kit Carioca* 😭\n\nSão necessários 50 Golds 🪙")
+                        else {
+                            await usuarios.alterarGold(dadosUsuario.id_usuario, -50)
+                            await usuarios.resetarRoubosDiaUsuario(dadosUsuario.id_usuario)
+                            await socket.reply(c, chatId, "Parabéns! 🥳\nVocê comprou um *Kit Carioca* e já pode voltar a roubar!")
+                        }
+                    } catch(err) { 
+                        throw err
+                    } break
         }
     } catch(err){
         await socket.reply(c, chatId, criarTexto(msgs_texto.geral.erro_comando_codigo, command), id)

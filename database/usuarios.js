@@ -155,3 +155,9 @@ export const resetarRoubosDiaUsuario = async(id_usuario) => {
 export const atualizaTimestampCooldownRoubo = async(id_usuario, timestamp_atual) => {
     db.updateAsync({id_usuario}, {$set: {timestamp_cooldown_roubo: timestamp_atual}})
 }
+
+export const obterUsuariosPorGold = async () => {
+    // Utiliza o findAsync para obter todos os usuários e os ordena pelo campo 'gold' em ordem decrescente
+    let usuarios = await db.findAsync({}).sort({ gold: -1 });
+    return usuarios;
+}

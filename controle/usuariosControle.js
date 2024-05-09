@@ -91,6 +91,14 @@ export const resetarRoubosDia = async() => {
     await usuariosdb.resetarRoubosDia()
 }
 
+export const resetarRoubosDiaUsuario = async(id_usuario) => {
+    await usuariosdb.resetarRoubosDiaUsuario(id_usuario)
+}
+
 export const atualizaTimestampCooldownRoubo = async(id_usuario, timestamp_atual) => {
     await usuariosdb.atualizaTimestampCooldownRoubo(id_usuario, timestamp_atual)
+}
+
+export const obterUsuariosPorGold = async() => {
+    return await usuariosdb.obterUsuariosPorGold()
 }
