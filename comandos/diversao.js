@@ -312,9 +312,12 @@ export const diversao = async(c, mensagemInfoCompleta) => {
             case "horario":
                 try{
                     if(moment().tz("America/Sao_Paulo").format("HH") == "22" && moment().tz("America/Sao_Paulo").format("mm") == "22" || moment().tz("America/Sao_Paulo").format("HH") == "17" && moment().tz("America/Sao_Paulo").format("mm") == "17"){
-                        await socket.sendText(c, chatId, "Horário da Karen 🇧🇷🇧🇷")
+                        let idKaren = "553195499971@s.whatsapp.net"
+                        let respostaTexto = criarTexto("Horário da @{p1} 🇧🇷🇧🇷", idKaren.replace("@s.whatsapp.net", ''))
+                        await socket.sendTextWithMentions(c, chatId, respostaTexto, [idKaren])
                         const karenimgFotoURL = "https://static.poder360.com.br/2022/08/Bolsonaro-capa-plano-de-governo-PL-2022-9.ago_.2022-848x477.jpg"
                         await socket.replyFileFromUrl(c, MessageTypes.image, chatId, karenimgFotoURL,'JPMC', id)
+                        break
                     } else await socket.sendText(c, chatId, moment.tz("America/Sao_Paulo").format("HH:mm"))    
                 } catch(err) {
                     throw err
@@ -336,8 +339,9 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                         let _idParticipantesAtuais = await socket.getGroupMembersId(c, groupId)
                         let _indexAleatorio = Math.floor(Math.random() * _idParticipantesAtuais.length)
                         let _pessoaEscolhida1 = _idParticipantesAtuais[_indexAleatorio]
-                        let _respostaTexto = criarTexto("O cuzinho do Pedras foi penetrado pelo(a) @{p1}! 😈🤤", _pessoaEscolhida1.replace("@s.whatsapp.net", ''),)
-                        await socket.sendTextWithMentions(c, chatId, _respostaTexto, [_pessoaEscolhida1])
+                        let idPedras = "5511945553143@s.whatsapp.net"
+                        let _respostaTexto = criarTexto("O cuzinho do @{p1} foi penetrado pelo(a) @{p2}! 😈🤤", idPedras.replace("@s.whatsapp.net", ''), _pessoaEscolhida1.replace("@s.whatsapp.net", ''),)
+                        await socket.sendTextWithMentions(c, chatId, _respostaTexto, [idPedras, _pessoaEscolhida1])
                 } catch (err) {
                     throw err
                 }
