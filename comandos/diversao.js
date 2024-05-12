@@ -396,7 +396,7 @@ export const diversao = async(c, mensagemInfoCompleta) => {
 
                     if(sucesso > 4){
                         //Se o roubo dá certo
-                        let valorRoubado = Math.floor(Math.random() * Math.abs(dadosAlvo.gold))
+                        let valorRoubado = Math.floor(Math.random() * Math.abs(0.8 * dadosAlvo.gold))
                         await usuarios.alterarGold(dadosAlvo.id_usuario, -valorRoubado)
                         await usuarios.alterarGold(dadosLadrao.id_usuario, valorRoubado)
 
@@ -405,7 +405,7 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                     } else {
                         //Se nao conseguir roubar
                         if(dadosLadrao.gold > 0) {
-                            let valorRoubado = Math.floor(Math.random() * Math.abs(dadosLadrao.gold))
+                            let valorRoubado = Math.floor(Math.random() * Math.abs(0.8 * dadosLadrao.gold))
 
                             await usuarios.alterarGold(dadosAlvo.id_usuario, valorRoubado)
                             await usuarios.alterarGold(dadosLadrao.id_usuario, -valorRoubado)
