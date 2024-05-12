@@ -159,12 +159,12 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                     }
                     let textoResultado = ''
                     if(vitoriaUsuario == true) {
-                        let premio = 5
+                        let premio = 30
                         usuarios.alterarGold(dadosUsuario.id_usuario, premio)
                         textoResultado = criarTexto(msgs_texto.diversao.ppt.resposta.vitoria, iconeEscolhaUsuario, iconeEscolhaBot)
                         textoResultado += "\nReceba " + premio + " moedas";
                     }else if(vitoriaUsuario == false){
-                        let punicao = -3
+                        let punicao = -15
                         usuarios.alterarGold(dadosUsuario.id_usuario, punicao)
                         textoResultado = criarTexto(msgs_texto.diversao.ppt.resposta.derrota, iconeEscolhaUsuario, iconeEscolhaBot)
                         textoResultado += "\nPerdeu " + Math.abs(punicao) + " moedas";

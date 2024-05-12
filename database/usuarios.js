@@ -122,6 +122,9 @@ export const resetarComandosDiaUsuario = async(id_usuario) =>{
 }
 
 export const alterarGold = async(id_usuario, valor) => {
+    let usuario =  await db.findOneAsync({id_usuario : id_usuario})
+    if(valor < 0 && usuario.gold < valor)
+        db.updateAsync({id_usuario}, {$inc:{gold : -usuario.gold}})
     db.updateAsync({id_usuario}, {$inc:{gold : valor}})
 }
 
