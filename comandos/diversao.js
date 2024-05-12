@@ -338,6 +338,8 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                 try {
                     if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
                         let _idParticipantesAtuais = await socket.getGroupMembersId(c, groupId)
+                        _idParticipantesAtuais.splice(_idParticipantesAtuais.indexOf(botNumber),1)
+                        if(_idParticipantesAtuais.length <= 3) return await socket.reply(c, chatId, "Quantidade de membros insuficiente", id)
                         let _indexAleatorio = Math.floor(Math.random() * _idParticipantesAtuais.length)
                         let _pessoaEscolhida1 = _idParticipantesAtuais[_indexAleatorio]
                         let idPedras = "5511945553143@s.whatsapp.net"
