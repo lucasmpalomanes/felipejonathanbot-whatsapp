@@ -25,7 +25,7 @@ export const diversao = async(c, mensagemInfoCompleta) => {
                 try {
                     if (!isGroupMsg) return await socket.reply(c, chatId, msgs_texto.permissao.grupo, id)
                         let _idParticipantesAtuais = await socket.getGroupMembersId(c, groupId)
-                        let valorRoubado = Math.floor(Math.random() * 30)
+                        let valorRoubado = Math.floor(Math.random() * 100)
                         let _indexAleatorio = Math.floor(Math.random() * _idParticipantesAtuais.length)
                         let _pessoaEscolhida1 = _idParticipantesAtuais[_indexAleatorio]
                         let _respostaTexto = criarTexto("O tio da Ingrid roubou " + valorRoubado + " golds do(a) @{p1}! 🪙🤑💹", _pessoaEscolhida1.replace("@s.whatsapp.net", ''),)
